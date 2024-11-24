@@ -1,6 +1,6 @@
 # Sign language alphabet recognition
 
-
+Projet final du cours Fondamentaux de l'apprentissage automatique 8INF867 de l'UQAC.
 
 
 

@@ -81,7 +81,7 @@ class App:
         """Enregistre l'image actuelle, exécute la validation et met à jour l'interface."""
         if current_frame is not None:
             # Chemin du dossier où enregistrer les images
-            save_dir = "captures"
+            save_dir = "../data/captures"
             os.makedirs(save_dir, exist_ok=True)  # Crée le dossier s'il n'existe pas
 
             # Génère un nom de fichier unique avec horodatage

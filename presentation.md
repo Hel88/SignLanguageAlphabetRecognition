@@ -1,6 +1,6 @@
 # Idée de plan
 
-[Samia] Introduction 
+### [Samia] Introduction 
 
 ### I. [Samia] Parler du dataset : 
   * données: complètes ou pas, cb d'instances, classes balancées ou pas,  si pas assez d'instances, est-ce qu'on peut en créer en appliquant des modifs aux images, visu de données
@@ -21,7 +21,7 @@
 
 ### III. [Chaimaa] modèles de ML de classification, qu'est-ce qui est le plus efficace (et rapide) sur ces données (SVM, KNN, Random Forest, gradient boosting, logistic reg... ) par ensemble (boosting et cie)?
 
-### V. [Héléna] interface graphique, rendu final : 
+### IV. [Héléna] interface graphique, rendu final : 
   * affichage général (maquette?)
   * prise de photo (webcam de l'ordinateur)
   * exercices aléatoires

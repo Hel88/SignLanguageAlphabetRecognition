@@ -13,7 +13,7 @@ class Classifier:
         """Simule une validation d'image."""
 
         self.image = cv2.imread(image_path)
-        cv2.imshow('image', self.image)  # afficher l'image
+        #cv2.imshow('image', self.image)  # afficher l'image
 
         # TODO
 

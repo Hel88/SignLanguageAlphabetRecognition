@@ -2,7 +2,7 @@
 
 Projet final du cours Fondamentaux de l'apprentissage automatique 8INF867 de l'UQAC.
 
-
+Dataset: https://www.kaggle.com/datasets/datamunge/sign-language-mnist
 
 ## Membres du groupe
 

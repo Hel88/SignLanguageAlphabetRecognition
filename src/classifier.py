@@ -5,7 +5,11 @@ from joblib import load
 
 
 class Classifier:
+    """
+    Classe s'occupant de charger un modèle, et de classifier les images prises par l'utilisateur
+    """
     def __init__(self):
+        # Chargement des modèles
         model_path = "svm_hog_model.joblib"
         scaler_path = "scaler.joblib"
         assert os.path.exists(model_path), f"Model file not found at {model_path}"
@@ -18,6 +22,12 @@ class Classifier:
         self.num_to_letter = {i: chr(65 + i) for i in range(26)}
 
     def preprocess_image(self, image_path, size=(28, 28)):
+        """
+        Traite l'image prise par l'utilisateur (la met en noir et blanc, à la bonne taille, et normalise les pixels)
+        :param image_path: Chemin vers l'image à traiter
+        :param size: taille de l'image
+        :return: image au bon format
+        """
         image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
         assert image is not None, f"Image file not found or invalid: {image_path}"
 
@@ -40,6 +50,11 @@ class Classifier:
         return features
 
     def validate_image(self, image_path):
+        """
+        Fonction de validation de l'image
+        :param image_path: image à classer
+        :return: lettre désignée par l'image
+        """
         # Preprocess the image and extract HOG features
         preprocessed_image = self.preprocess_image(image_path)
         hog_features = self.extract_hog_features(preprocessed_image)

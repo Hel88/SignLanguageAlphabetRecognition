@@ -22,19 +22,37 @@ class App:
         """
         self.root = root
         self.root.title("Sign Language App")
-        self.root.geometry("400x600")
+        self.root.geometry("750x700")  # taille de la fenetre
         self.root.configure(bg="#335379")
 
         self.Classifier = classifier
+        self.current_frame = None
+        self.current_letter = "Y"
 
-        # Canvas pour le rendu graphique
-        self.canvas = tk.Canvas(self.root, bg="#335379", highlightthickness=0)
+        # Diviser la fenetre principale en 2
+        self.left_frame = tk.Frame(self.root, width=300, bg="#F0F0F0")
+        self.left_frame.pack(side="left", fill="y")
+
+        self.right_frame = tk.Frame(self.root, bg="#335379")
+        self.right_frame.pack(side="right", fill="both", expand=True)
+
+        # interface de gauche (choix des lettres)
+        self.create_left_panel()
+
+        # Interface de droite (exercice)
+        self.canvas = tk.Canvas(self.right_frame, bg="#335379", highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
+
+        self.letter_text = self.canvas.create_text(200, 90, text="", font=("Helvetica", 24, "bold"), fill="white")
+
+        # # Canvas pour le rendu graphique
+        # self.canvas = tk.Canvas(self.root, bg="#335379", highlightthickness=0)
+        # self.canvas.pack(fill="both", expand=True)
 
         # Rectangle pour le titre
         self.main_rectangle = self.create_rounded_rectangle(50, 50, 350, 150, radius=20, fill="white", outline="")
-        self.canvas.create_text(200, 90, text="Sign the letter:", font=("Helvetica", 18, "bold"), fill="#1E1E2E")
-        self.letter_text = self.canvas.create_text(200, 120, text="B", font=("Helvetica", 24, "bold"), fill="#1E1E2E")
+        self.title_text = self.canvas.create_text(200, 90, text="", font=("Helvetica", 18, "bold"), fill="#1E1E2E")
+        self.letter_text = self.canvas.create_text(200, 120, text="", font=("Helvetica", 24, "bold"), fill="#1E1E2E")
 
         # Rectangle pour la webcam
         self.create_rounded_rectangle(50, 180, 350, 450, radius=20, fill="white", outline="")
@@ -47,15 +65,66 @@ class App:
         self.change_button = ttk.Button(self.root, text="Change Letter", command=self.change_letter)
         self.change_button.place(relx=0.7, rely=0.85, anchor="center")
 
+        # Bouton pour afficher une image d'aide
+        self.show_image_button = ttk.Button(self.right_frame, text="Help",
+                                            command=lambda: self.show_image_window("../data/dataset/american_sign_language.PNG"))
+        self.show_image_button.pack(side="bottom", pady=10)
+
+
         # Label pour le feedback
         self.feedback_label = tk.Label(self.root, font=("Helvetica", 14, "bold"), bg="#335379")
 
         # Initialisation webcam
         self.cap = cv2.VideoCapture(0)
-        self.current_frame = None
-        self.current_letter = "Y"
-
         self.update_webcam()
+
+    def show_image_window(self, image_path):
+        """Affiche une fenêtre contenant une image avec une croix pour la fermer."""
+        # Créer une fenêtre secondaire
+        image_window = tk.Toplevel(self.root)
+        image_window.title("Image Viewer")
+        image_window.geometry("500x400")
+        image_window.configure(bg="#335379")
+
+        # Charger et afficher l'image
+        image = Image.open(image_path)
+        image = image.resize((400, 300))  # Redimensionner l'image pour s'adapter
+        photo = ImageTk.PhotoImage(image)
+
+        label = tk.Label(image_window, image=photo, bg="#335379")
+        label.image = photo  # Conserver une référence pour éviter le garbage collection
+        label.pack(pady=10)
+
+        # Bouton pour fermer la fenêtre
+        close_button = ttk.Button(image_window, text="Fermer", command=image_window.destroy)
+        close_button.pack(pady=10)
+
+    def create_left_panel(self):
+        """Crée l'interface à gauche pour choisir les lettres et lancer l'exercice."""
+        tk.Label(self.left_frame, text="Choose the letters you want to learn :", font=("Helvetica", 14), bg="#F0F0F0").pack(pady=10)
+
+        # Cases à cocher pour chaque lettre
+        self.letter_vars = {}
+        for letter in string.ascii_uppercase:
+            if (letter != 'J') and (letter != 'Z'):
+                var = tk.BooleanVar()
+                chk = ttk.Checkbutton(self.left_frame, text=letter, variable=var)
+                chk.pack(anchor="w", padx=10)
+                self.letter_vars[letter] = var
+
+        # Bouton pour démarrer l'exercice
+        self.start_button = ttk.Button(self.left_frame, text="Start training", command=self.start_exercise)
+        self.start_button.pack(pady=20)
+
+    def start_exercise(self):
+        """Démarre l'exercice avec les lettres sélectionnées."""
+        self.letters_to_learn = [letter for letter, var in self.letter_vars.items() if var.get()]
+        self.title_text = self.canvas.create_text(200, 90, text="Sign the letter:", font=("Helvetica", 18, "bold"), fill="#1E1E2E")
+
+        if not self.letters_to_learn:
+            self.show_feedback("Veuillez sélectionner au moins une lettre.", "red")
+        else:
+            self.change_letter()
 
     def create_rounded_rectangle(self, x1, y1, x2, y2, radius=25, **kwargs):
         """
@@ -109,31 +178,6 @@ class App:
 
         # Relance la mise à jour toutes les 10 ms pour maintenir un flux vidéo
         self.root.after(10, self.update_webcam)
-
-    """def save_image_and_validate(self):
-        if self.current_frame is not None:
-            # Sauvegarde et traitement de l'image
-            height, width, _ = self.current_frame.shape
-            x1, y1, x2, y2 = width // 3, height // 4, (2 * width) // 3, (3 * height) // 4
-            cropped_frame = self.current_frame[y1:y2, x1:x2]
-
-            save_dir = "../data/captures"
-            os.makedirs(save_dir, exist_ok=True)
-
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            file_path = os.path.join(save_dir, f"capture_{self.current_letter}_{timestamp}.png")
-            cv2.imwrite(file_path, cropped_frame)
-
-            # Validation
-            predicted_letter = self.Classifier.validate_image(file_path)
-            print(f"Expected letter: {self.current_letter}")
-            print(f"Predicted letter: {predicted_letter}")
-
-            if predicted_letter == self.current_letter:
-                self.show_feedback(f"Correct! {predicted_letter}", "green", self.change_letter)
-            else:
-                self.show_feedback(f"Incorrect: {predicted_letter}", "red")
-    """
 
     def save_image_and_validate(self):
         """
@@ -193,16 +237,10 @@ class App:
         self.feedback_label.place_forget()
 
     def change_letter(self):
-        """
-        Choisit une lettre au hasard en dehors des lettres J et Z (puisqu'on n'a pas d'image pour celles-là)
-        :return: None
-        """
-        # Exclure les lettres 'J' et 'Z'
-        excluded_letters = ['J', 'Z']
-        available_letters = [letter for letter in string.ascii_uppercase if letter not in excluded_letters]
-        new_letter = random.choice(available_letters)
-        self.current_letter = new_letter
-        self.canvas.itemconfig(self.letter_text, text=self.current_letter)
+        """Change la lettre à apprendre aléatoirement parmi les lettres sélectionnées."""
+        if self.letters_to_learn:
+            self.current_letter = random.choice(self.letters_to_learn)
+            self.canvas.itemconfig(self.letter_text, text=self.current_letter)
 
 
 def start_app(Classifier):

@@ -68,7 +68,7 @@ class App:
 
         # Bouton pour afficher une image d'aide
         self.show_image_button = ttk.Button(self.right_frame, text="Help",
-                                            command=lambda: self.show_image_window("../data/dataset/american_sign_language.PNG"))
+                                            command=lambda: self.show_image_window("../data/dataset/amer_sign2.png"))
         #self.show_image_button.pack(side="bottom", pady=10)
         self.show_image_button.place(relx=0.7, rely=0.85, anchor="center")
 

@@ -152,6 +152,11 @@ class App:
         self.canvas.itemconfig(self.letter_text, text=self.current_letter)
 
 
+def start_app(Classifier):
+    root=tk.Tk()
+    app=App(root, Classifier)
+    root.mainloop()
+
 # Démarrage de l'application
 if __name__ == "__main__":
     classifier = Classifier()

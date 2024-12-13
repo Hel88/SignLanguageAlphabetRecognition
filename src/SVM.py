@@ -13,6 +13,13 @@ import pandas as pd
 train_data = pd.read_csv("../data/dataset/sign_mnist_train.csv")
 test_data = pd.read_csv("../data/dataset/sign_mnist_test.csv")
 
+# Charger les données supplémentaires
+custom_data = pd.read_csv("../data/custom_data.csv")
+
+# Ajouter les données custom aux données d'entrainement
+train_data = pd.concat([train_data, custom_data])
+
+
 # Extraire les labels et les données d'image
 y_train = train_data['label'].values
 X_train = train_data.drop(['label'], axis=1).values

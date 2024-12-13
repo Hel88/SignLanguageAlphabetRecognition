@@ -25,7 +25,8 @@ def preprocess_image(image_path, size=(28, 28)):
     resized_image = cv2.resize(cropped_image, size)
     return resized_image
 
-# Pour chaque photo dans le dossier captures
+# Prend chaque image du dossier captures et l'ajoute comme donnée au fichier  custom_data.csv
+
 images_file_path = "../data/captures/"
 new_data = []
 for image_path in os.listdir(images_file_path):

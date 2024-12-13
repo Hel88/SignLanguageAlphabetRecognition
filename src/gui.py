@@ -22,7 +22,7 @@ class App:
         """
         self.root = root
         self.root.title("Sign Language App")
-        self.root.geometry("750x700")  # taille de la fenetre
+        self.root.geometry("730x680")  # taille de la fenetre
         self.root.configure(bg="#335379")
 
         self.Classifier = classifier
@@ -57,18 +57,20 @@ class App:
         # Rectangle pour la webcam
         self.create_rounded_rectangle(50, 180, 350, 450, radius=20, fill="white", outline="")
 
+
         # Bouton "Verify"
-        self.ok_button = ttk.Button(self.root, text="Verify", command=self.save_image_and_validate)
-        self.ok_button.place(relx=0.5, rely=0.85, anchor="center")
+        self.ok_button = ttk.Button(self.right_frame, text="Verify", command=self.save_image_and_validate)
+        self.ok_button.place(relx=0.3, rely=0.85, anchor="center")
 
         # Bouton "Change Letter"
-        self.change_button = ttk.Button(self.root, text="Change Letter", command=self.change_letter)
-        self.change_button.place(relx=0.7, rely=0.85, anchor="center")
+        self.change_button = ttk.Button(self.right_frame, text="Change Letter", command=self.change_letter)
+        self.change_button.place(relx=0.5, rely=0.85, anchor="center")
 
         # Bouton pour afficher une image d'aide
         self.show_image_button = ttk.Button(self.right_frame, text="Help",
                                             command=lambda: self.show_image_window("../data/dataset/american_sign_language.PNG"))
-        self.show_image_button.pack(side="bottom", pady=10)
+        #self.show_image_button.pack(side="bottom", pady=10)
+        self.show_image_button.place(relx=0.7, rely=0.85, anchor="center")
 
 
         # Label pour le feedback
@@ -79,7 +81,7 @@ class App:
         self.update_webcam()
 
     def show_image_window(self, image_path):
-        """Affiche une fenêtre contenant une image avec une croix pour la fermer."""
+        """Affiche une fenêtre contenant une image (le guide de language des signes) avec une croix pour la fermer."""
         # Créer une fenêtre secondaire
         image_window = tk.Toplevel(self.root)
         image_window.title("Image Viewer")
@@ -122,7 +124,7 @@ class App:
         self.title_text = self.canvas.create_text(200, 90, text="Sign the letter:", font=("Helvetica", 18, "bold"), fill="#1E1E2E")
 
         if not self.letters_to_learn:
-            self.show_feedback("Veuillez sélectionner au moins une lettre.", "red")
+            self.show_feedback("Select at least one letter.", "red")
         else:
             self.change_letter()
 
@@ -163,13 +165,18 @@ class App:
 
             # Dessiner un rectangle pour indiquer la zone de capture
             height, width, _ = frame.shape
+            aspect_ratio = width / height
             x1, y1, x2, y2 = width // 3, height // 4, (2 * width) // 3, (3 * height) // 4
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
+            # Fixer une largeur ou une hauteur cible
+            target_width = 280  # Par exemple, largeur souhaitée
+            target_height = int(target_width / aspect_ratio)
+
             # Convertit l'image de BGR (format OpenCV) à RGB (format tkinter)
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            # Redimensionne l'image pour s'adapter à l'espace d'affichage
-            frame_resized = cv2.resize(frame_rgb, (280, 240))
+            # Redimensionner en gardant les proportions
+            frame_resized = cv2.resize(frame_rgb, (target_width, target_height))
             # Convertit l'image en un objet compatible tkinter
             image = ImageTk.PhotoImage(Image.fromarray(frame_resized))
             # Ajoute l'image au canvas et l'affiche à une position donnée
@@ -222,7 +229,7 @@ class App:
         :return: None
         """
         self.feedback_label.config(text=message, foreground=color, bg="white")
-        self.feedback_label.place(relx=0.5, rely=0.2, anchor="center")
+        self.feedback_label.place(relx=0.7, rely=0.7, anchor="center")
 
         if callback:
             self.root.after(1000, lambda: [callback(), self.clear_feedback()])

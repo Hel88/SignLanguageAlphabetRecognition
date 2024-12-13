@@ -8,10 +8,18 @@ import random
 import string
 from classifier import Classifier
 
-print("Scikit-learn est correctement installé.")
+#print("Scikit-learn est correctement installé.")
 
 class App:
+    """
+    Classe gérant l'interface graphique
+    """
     def __init__(self, root, classifier):
+        """
+        Initialisation
+        :param root: root tkinter
+        :param classifier: classe gérant la classification des images
+        """
         self.root = root
         self.root.title("Sign Language App")
         self.root.geometry("400x600")
@@ -50,6 +58,18 @@ class App:
         self.update_webcam()
 
     def create_rounded_rectangle(self, x1, y1, x2, y2, radius=25, **kwargs):
+        """
+        Crée un rectangle aux coins arrondis qui sera affiché sur l'interface.
+
+        :param x1: Coordonnée x du coin supérieur gauche du rectangle.
+        :param y1: Coordonnée y du coin supérieur gauche du rectangle.
+        :param x2: Coordonnée x du coin inférieur droit du rectangle.
+        :param y2: Coordonnée y du coin inférieur droit du rectangle.
+        :param radius: Rayon des coins arrondis (par défaut : 25).
+        :param kwargs: Arguments supplémentaires passés à la méthode `create_polygon`
+                       de tkinter, comme les couleurs ou le style de bordure.
+        :return: L'identifiant de l'objet graphique créé par tkinter (entier).
+        """
         points = [
             (x1 + radius, y1), (x2 - radius, y1),
             (x2, y1), (x2, y1 + radius),
@@ -61,8 +81,14 @@ class App:
         return self.canvas.create_polygon(points, smooth=True, **kwargs)
 
     def update_webcam(self):
+        """
+        Met à jour l'affichage en temps réel de la webcam sur l'interface graphique.
+        :return: None
+        """
+        # Capture une image depuis la webcam
         ret, frame = self.cap.read()
         if ret:
+            # effet miroir horizontal
             frame = cv2.flip(frame, 1)
             self.current_frame = frame
 
@@ -71,12 +97,17 @@ class App:
             x1, y1, x2, y2 = width // 3, height // 4, (2 * width) // 3, (3 * height) // 4
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
+            # Convertit l'image de BGR (format OpenCV) à RGB (format tkinter)
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            # Redimensionne l'image pour s'adapter à l'espace d'affichage
             frame_resized = cv2.resize(frame_rgb, (280, 240))
+            # Convertit l'image en un objet compatible tkinter
             image = ImageTk.PhotoImage(Image.fromarray(frame_resized))
+            # Ajoute l'image au canvas et l'affiche à une position donnée
             self.canvas.image = image
             self.canvas.create_image(200, 315, image=image)
 
+        # Relance la mise à jour toutes les 10 ms pour maintenir un flux vidéo
         self.root.after(10, self.update_webcam)
 
     """def save_image_and_validate(self):
@@ -105,6 +136,10 @@ class App:
     """
 
     def save_image_and_validate(self):
+        """
+        Capture une image de la webcam, la sauvegarde et la valide (ou non) en la classifiant
+        :return:
+        """
         if self.current_frame is not None:
             # Sauvegarde et traitement de l'image
             height, width, _ = self.current_frame.shape
@@ -114,9 +149,11 @@ class App:
             # Convertir en niveaux de gris
             gray_frame = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2GRAY)
 
+            # Créer le dossier de sauvegarde si il n'existe pas
             save_dir = "../data/captures"
             os.makedirs(save_dir, exist_ok=True)
 
+            # Donne un nom aléatoire unique à l'image (en fonction de la date) et la sauvegarde
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             file_path = os.path.join(save_dir, f"capture_{self.current_letter}_{timestamp}.png")
             cv2.imwrite(file_path, gray_frame)  # Enregistrer l'image en niveaux de gris
@@ -126,12 +163,20 @@ class App:
             print(f"Expected letter: {self.current_letter}")
             print(f"Predicted letter: {predicted_letter}")
 
+            # Feedback visuel pour l'utilisateur
             if predicted_letter == self.current_letter:
                 self.show_feedback(f"Correct! {predicted_letter}", "green", self.change_letter)
             else:
                 self.show_feedback(f"Incorrect: {predicted_letter}", "red")
 
     def show_feedback(self, message, color, callback=None):
+        """
+        Affichage d'un feedback sur l'interface
+        :param message: stexte du msg à afficher
+        :param color: couleur du msg
+        :param callback: fonction à exécuter après avoir affiché le msg
+        :return: None
+        """
         self.feedback_label.config(text=message, foreground=color, bg="white")
         self.feedback_label.place(relx=0.5, rely=0.2, anchor="center")
 
@@ -141,9 +186,17 @@ class App:
             self.root.after(1000, self.clear_feedback)
 
     def clear_feedback(self):
+        """
+        Supprime le feedback affiché
+        :return: None
+        """
         self.feedback_label.place_forget()
 
     def change_letter(self):
+        """
+        Choisit une lettre au hasard en dehors des lettres J et Z (puisqu'on n'a pas d'image pour celles-là)
+        :return: None
+        """
         # Exclure les lettres 'J' et 'Z'
         excluded_letters = ['J', 'Z']
         available_letters = [letter for letter in string.ascii_uppercase if letter not in excluded_letters]
@@ -153,6 +206,7 @@ class App:
 
 
 def start_app(Classifier):
+    # Démarrage de l'application
     root=tk.Tk()
     app=App(root, Classifier)
     root.mainloop()

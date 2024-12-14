@@ -4,7 +4,7 @@ from skimage.feature import hog
 from joblib import load  # Pour charger le modèle SVM
 
 # Charger le modèle SVM pré-entraîné
-svm_model = load("../svm_hog_model.joblib")  # Remplacez par le chemin de votre modèle sauvegardé
+svm_model = load("../model.joblib")  # Remplacez par le chemin de votre modèle sauvegardé
 
 # Paramètres HOG utilisés pendant l'entraînement
 hog_params = {

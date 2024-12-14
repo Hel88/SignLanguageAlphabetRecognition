@@ -10,7 +10,7 @@ class Classifier:
     """
     def __init__(self):
         # Chargement des modèles
-        model_path = "svm_hog_model.joblib"
+        model_path = "model.joblib"
         scaler_path = "scaler.joblib"
         assert os.path.exists(model_path), f"Model file not found at {model_path}"
         assert os.path.exists(scaler_path), f"Scaler file not found at {scaler_path}"

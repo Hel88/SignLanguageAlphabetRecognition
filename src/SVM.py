@@ -63,7 +63,7 @@ print(classification_report(y_test, y_pred))
 
 # Sauvegarder le modèle et le scaler
 print("Sauvegarde du modèle et du scaler...")
-dump(model, "svm_hog_model.joblib")
+dump(model, "model.joblib")
 dump(scaler, "scaler.joblib")
 
 print("Modèle et scaler sauvegardés avec succès.")

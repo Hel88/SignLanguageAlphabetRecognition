@@ -1,6 +1,3 @@
-"""Modèle CNN ( vf )
-    chiant et résulats un peu meilleur que svm mais bon . . .
-"""
 import pandas as pd
 import numpy as np
 from sklearn.utils import compute_class_weight
@@ -80,7 +77,6 @@ history = model.fit(
 predictions = np.argmax(model.predict(X_test), axis=1)  # Retourne les indices des classes
 true_labels = np.argmax(y_test, axis=1)  # Retourne les indices des classes réelles
 
-# Afficher un rapport de classification
 # Vérifier les classes présentes dans les données
 present_classes = np.unique(true_labels)
 print(f"Classes présentes dans les données de test : {present_classes}")
@@ -91,7 +87,12 @@ classes = [chr(65 + i) for i in present_classes]  # 'A' à 'Z' pour les classes 
 # Afficher le rapport de classification
 print(classification_report(true_labels, predictions, target_names=classes))
 
-
 # Visualisation des prédictions correctes et incorrectes
 correct = np.nonzero(predictions == true_labels)[0]
 incorrect = np.nonzero(predictions != true_labels)[0]
+
+# Sauvegarder le modèle CNN au format HDF5
+model_save_path = "../data/models/CNN/cnn_model.h5"
+print("Sauvegarde du modèle CNN dans :", model_save_path)
+model.save(model_save_path)
+print("Modèle CNN sauvegardé avec succès.")

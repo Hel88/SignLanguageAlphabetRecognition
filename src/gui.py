@@ -8,8 +8,6 @@ import random
 import string
 from classifier import Classifier
 
-#print("Scikit-learn est correctement installé.")
-
 class App:
     """
     Classe gérant l'interface graphique

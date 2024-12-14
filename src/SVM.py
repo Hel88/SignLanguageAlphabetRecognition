@@ -1,9 +1,6 @@
-"""Modèle SVM ( Plus rapide, et bons résultats en général )
-"""
 import numpy as np
 from skimage.feature import hog
 from joblib import dump
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
@@ -52,8 +49,7 @@ X_test_hog_scaled = scaler.transform(X_test_hog)
 
 # Entraîner le modèle SVM
 print("Entraînement du modèle SVM...")
-#model = SVC(kernel='rbf', probability=True, random_state=101)
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+model = SVC(kernel='rbf', probability=True, random_state=101)
 model.fit(X_train_hog_scaled, y_train)
 
 # Évaluer le modèle

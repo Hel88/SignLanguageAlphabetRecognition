@@ -46,3 +46,20 @@ with open(csv_path, "a", newline="") as f:
     writer.writerows(new_data)
 
 
+# Récupérer le nombre d'instances pour chaque label
+label_counts = {}
+
+with open(csv_path, "r") as f:
+    reader = csv.reader(f)
+    next(reader)
+    for row in reader:
+        if row:  # Vérifier si la ligne n'est pas vide
+            label = int(row[0])  # Le label est la première colonne
+            if label not in label_counts:
+                label_counts[label] = 0
+            label_counts[label] += 1
+
+# Afficher les résultats
+print("Nombre d'instances par lettre :")
+for label in sorted(label_counts.keys()):
+    print(f"Lettre {label} : {label_counts[label]} instances")

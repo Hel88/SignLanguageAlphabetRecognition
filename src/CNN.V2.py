@@ -5,6 +5,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, Dropout, BatchNormalization
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import classification_report
+from sklearn.metrics import cohen_kappa_score
 
 # Charger les données
 train_data = pd.read_csv("../data/dataset/sign_mnist_train.csv")
@@ -90,6 +91,12 @@ print(classification_report(true_labels, predictions, target_names=classes))
 # Visualisation des prédictions correctes et incorrectes
 correct = np.nonzero(predictions == true_labels)[0]
 incorrect = np.nonzero(predictions != true_labels)[0]
+
+print(f"Nombre de prédictions correctes : {len(correct)}")
+print(f"Nombre de prédictions incorrectes : {len(incorrect)}")
+
+kappa = cohen_kappa_score(true_labels, predictions)
+print(f"Cohen's Kappa : {kappa:.2f}")
 
 # Sauvegarder le modèle CNN au format HDF5
 model_save_path = "../data/models/CNN/cnn_model.h5"

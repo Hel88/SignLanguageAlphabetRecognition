@@ -5,6 +5,8 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
 import pandas as pd
+from sklearn.metrics import  confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 
 # Charger les données
 train_data = pd.read_csv("../data/dataset/sign_mnist_train.csv")
@@ -56,6 +58,16 @@ model.fit(X_train_hog_scaled, y_train)
 print("Évaluation du modèle...")
 y_pred = model.predict(X_test_hog_scaled)
 print(classification_report(y_test, y_pred))
+
+# Affichage de la matrice de confusion
+conf_matrix = confusion_matrix(y_test, y_pred)
+print("Matrice de confusion :\n", conf_matrix)
+
+# Visualisation de la matrice de confusion
+disp = ConfusionMatrixDisplay(confusion_matrix=conf_matrix, display_labels=np.unique(y_test))
+disp.plot(cmap="Blues")
+plt.show()
+
 
 # Sauvegarder le modèle et le scaler
 print("Sauvegarde du modèle et du scaler...")
